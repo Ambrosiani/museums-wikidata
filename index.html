@@ -1,134 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Museer i Sverige</title>
-	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css"/>
-	<link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css" type="text/css"/>
-	
-	  <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
-	  <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-	  <script type="text/javascript" src="bower_components/accounting.js/accounting.min.js"></script>
-	  <script type="text/javascript" src="bower_components/leaflet/dist/leaflet.js"></script>
+	<title>Svenska museer i Wikidata</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		html, body {
+			height: 100%;
+		}
+		#map {
+			height: 80%;
+		}
+		#text {
+			height: 20%;
+		}
+	</style>
 </head>
 <body>
-	<table id="museer" class="table table-striped">
-		<thead>
-		<tr>
-			<th>Nummer
-</th>
-		<th>Wikidata-ID</th>
-	<th>Namn</th>
-	<th>Latitud</th>
-	<th>Longitud</th>
-	<th>Bes&ouml;kssiffror</th>
-	<th>&Aring;r</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-	</table>
+	<div id="map"></div>
+	<div id="text"><ul id="statistik"></ul></div>
 	<script>
+		var map = L.map('map').setView([60, 15], 5);
 
-	//ladda direkt från api (i två steg) istället för från lokala kopior
-	//använd ?callback=function
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery &copy; <a href="http://mapbox.com">Mapbox</a>',
+			id: 'mapbox.streets'
+		}).addTo(map);
 
-$.getJSON('http://wdq.wmflabs.org/api?q=claim[31:(tree[33506][][279])]%20AND%20tree[34][150][17,131]&callback=?', function (museer) {
+$.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+wd%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0D%0APREFIX+wdt%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0D%0APREFIX+wikibase%3A+%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0D%0APREFIX+p%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2F%3E%0D%0APREFIX+v%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fstatement%2F%3E%0D%0APREFIX+q%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fqualifier%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0ASELECT+%3Fmuseum+%3FmuseumLabel+%3FtypLabel+%3Fcoord+%3Fweb+%3Fvisitors%0D%0AWHERE+%7B%0D%0A++%3Fmuseum+wdt%3AP17+wd%3AQ34+.%0D%0A++%3Fmuseum+wdt%3AP31+%3Ftyp+.%0D%0A++%3Ftyp+(wdt%3AP279)*+wd%3AQ33506+.%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP625+%3Fcoord+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP856+%3Fweb+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP1174+%3Fvisitors+.+%0D%0A++%7D%0D%0A++SERVICE+wikibase%3Alabel+%7B%0D%0A++++bd%3AserviceParam+wikibase%3Alanguage+%22sv%22+.%0D%0A++%7D%0D%0A%7D&format=json', function (museer) {
+	var museumStats = { "totalCount" : 0, "coordinateCount" : 0, "websiteCount" : 0, "visitorsCount" : 0};
+	var color = ["red", "yellow", "green"];
 
-
-		var j = 0;
-		var appendIDs = "";
-		var defaultApiString = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=labels|claims&ids=";
-		/*
-		$(this).each(function() {
-		$("table").append("<tr><td>" + museer.items.id + "</td><td>" + museer.items.id + "</td></tr>");
-	});
-*/
-
-
-
-/*
-			var museumid = museer.items[i].toString();
-			var apiString = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=labels|claims&ids=Q";
-			apiString += museumid;
-			apiString += "&callback=museiinfo"
-			detaljinfo[i] = $.getJSON(apiString, function (museiinfo) {
-		$.each(museiinfo.entities, function(k, v) {
-			n++;
-			
-		if(v.claims.P625) {
-			var latitude = v.claims.P625[0].mainsnak.datavalue.value.latitude;
-			var longitude = v.claims.P625[0].mainsnak.datavalue.value.longitude;
+	for (var i = 0; i < museer.results.bindings.length; i++) {
+		var colorCount = 0;
+		var museumID = museer.results.bindings[i].museum.value.split('Q')[1];
+		var popupContent = "<strong>" + museer.results.bindings[i].museumLabel.value + '</strong><br/>Wikidata: <a href="' + museer.results.bindings[i].museum.value + '" target="_blank">' + museumID + '</a>' ;
+		museumStats["totalCount"]++;
+		if (museer.results.bindings[i].web) {
+			museumStats["websiteCount"]++;
+			colorCount++;
+			popupContent += '<br/>Webb: <a href="' + museer.results.bindings[i].web.value + '" target="_blank">' + museer.results.bindings[i].web.value + '</a>';
 		}
-		else {var latitude = ""; var longitude = ""; }
-
-		if(v.claims.P856) {
-			var url = v.claims.P856[0].mainsnak.datavalue.value;
-			var name = '<a href="' + url + '">' + v.labels.sv.value + "</a>";
+		if (museer.results.bindings[i].visitors) {
+			museumStats["visitorsCount"]++;
+			colorCount++;
+			popupContent += '<br/>Bes&ouml;k: ' + museer.results.bindings[i].visitors.value;
 		}
-		else {var name = v.labels.sv.value; }
-
-		if(v.claims.P1174) {
-			var visitorsPerYear = accounting.formatNumber(Number(v.claims.P1174[0].mainsnak.datavalue.value.amount), 0, " ")
-			;
-			if(v.claims.P1174[0].qualifiers) {
-				if(v.claims.P1174[0].qualifiers.P585) {
-					var visitorsDate = v.claims.P1174[0].qualifiers.P585[0].datavalue.value.time;
-					var visitorsYear = String(visitorsDate).substr(8, 4);
-
-				}
-				else { var visitorsDate = ""; var visitorsYear = ""; }
-			}
-			else { var visitorsDate = ""; var visitorsYear = ""; }
+		if (museer.results.bindings[i].coord) {
+			museumStats["coordinateCount"]++;
+			var coordText = museer.results.bindings[i].coord.value.split('(');
+			var latlngText = coordText[1].split(' ');
+			var lat = latlngText[0];
+			var lngText = latlngText[1];			
+			var lng = lngText.substring(0, lngText.length-1);
+			var latlng = L.latLng(lat, lng);
+			var marker = L.circleMarker(latlng, {radius: 4, color: 'black', fillOpacity: 1, fillColor: color[colorCount]}).bindPopup(popupContent).addTo(map);
 		}
-		else {var visitorsPerYear = ""; var visitorsDate = ""; var visitorsYear = ""; }
-
-		$("tbody").append('<tr><td>'+ n +'</td><td><a href="https://www.wikidata.org/wiki/'+ k + '">' + k + '</a></td><td>'+ name +'</td><td>'+ latitude +'</td><td>'+ longitude +'</td><td>'+ visitorsPerYear +'</td><td>' + visitorsYear +'</td></tr>');
-	});
-			});
-			*/
-	});
-
-/*
-	var n = 0;
-	for (var i = 1; i < 9; i++) {
-		$.getJSON('museer' + i + '.json', function (json) {
 		
-		$.each(json.entities, function(k, v) {
-			n++;
-			
-		if(v.claims.P625) {
-			var latitude = v.claims.P625[0].mainsnak.datavalue.value.latitude;
-			var longitude = v.claims.P625[0].mainsnak.datavalue.value.longitude;
-		}
-		else {var latitude = ""; var longitude = ""; }
-
-		if(v.claims.P856) {
-			var url = v.claims.P856[0].mainsnak.datavalue.value;
-			var name = '<a href="' + url + '">' + v.labels.sv.value + "</a>";
-		}
-		else {var name = v.labels.sv.value; }
-
-		if(v.claims.P1174) {
-			var visitorsPerYear = accounting.formatNumber(Number(v.claims.P1174[0].mainsnak.datavalue.value.amount), 0, " ")
-			;
-			if(v.claims.P1174[0].qualifiers) {
-				if(v.claims.P1174[0].qualifiers.P585) {
-					var visitorsDate = v.claims.P1174[0].qualifiers.P585[0].datavalue.value.time;
-					var visitorsYear = String(visitorsDate).substr(8, 4);
-
-				}
-				else { var visitorsDate = ""; var visitorsYear = ""; }
-			}
-			else { var visitorsDate = ""; var visitorsYear = ""; }
-		}
-		else {var visitorsPerYear = ""; var visitorsDate = ""; var visitorsYear = ""; }
-
-		$("tbody").append('<tr><td>'+ n +'</td><td><a href="https://www.wikidata.org/wiki/'+ k + '">' + k + '</a></td><td>'+ name +'</td><td>'+ latitude +'</td><td>'+ longitude +'</td><td>'+ visitorsPerYear +'</td><td>' + visitorsYear +'</td></tr>');
-	});
-		});	
-	};
-
-	*/
-	</script>
+	}
+	$('#statistik').append('<li>Swedish museums in Wikidata: <strong>' + museumStats["totalCount"] + '</strong></li>');
+	$('#statistik').append('<li>Museums with coordinates: <strong>' + museumStats["coordinateCount"] + '</strong> (' + Number(museumStats["coordinateCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
+	$('#statistik').append('<li>Museums with web site: <strong>' + museumStats["websiteCount"] + '</strong> (' + Number(museumStats["websiteCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
+	$('#statistik').append('<li>Museums with visitor count: <strong>' + museumStats["visitorsCount"] + '</strong> (' + Number(museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
+});
+</script>
 </body>
 </html>
+
