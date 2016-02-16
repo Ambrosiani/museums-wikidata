@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Svenska museer i Wikidata</title>
+	<title>Svenska slott i Wikidata</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -40,7 +40,7 @@
 			id: 'mapbox.streets'
 		}).addTo(map);
 
-$.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+wd%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0D%0APREFIX+wdt%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0D%0APREFIX+wikibase%3A+%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0D%0APREFIX+p%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2F%3E%0D%0APREFIX+v%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fstatement%2F%3E%0D%0APREFIX+q%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fqualifier%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0ASELECT+%3Fmuseum+%3FmuseumLabel+%3FtypLabel+%3Fcoord+%3Fweb+%3Fvisitors%0D%0AWHERE+%7B%0D%0A++%3Fmuseum+wdt%3AP17+wd%3AQ34+.%0D%0A++%3Fmuseum+wdt%3AP31+%3Ftyp+.%0D%0A++%3Ftyp+(wdt%3AP279)*+wd%3AQ33506+.%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP625+%3Fcoord+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP856+%3Fweb+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP1174+%3Fvisitors+.+%0D%0A++%7D%0D%0A++SERVICE+wikibase%3Alabel+%7B%0D%0A++++bd%3AserviceParam+wikibase%3Alanguage+%22sv%22+.%0D%0A++%7D%0D%0A%7D&format=json', function (museer) {
+$.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+wd%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0D%0APREFIX+wdt%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0D%0APREFIX+wikibase%3A+%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0D%0APREFIX+p%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2F%3E%0D%0APREFIX+v%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fstatement%2F%3E%0D%0APREFIX+q%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fqualifier%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0ASELECT+%3Fcastle+%3FcastleLabel+%3Fcoord+%3Fweb+%3Fvisitors%0D%0AWHERE+%7B%0D%0A++%3Fcastle+wdt%3AP17+wd%3AQ34+.%0D%0A++%3Fcastle+wdt%3AP31+wd%3AQ23413+.%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fcastle+wdt%3AP625+%3Fcoord+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fcastle+wdt%3AP856+%3Fweb+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fcastle+wdt%3AP1174+%3Fvisitors+.%0D%0A++%7D%0D%0A++SERVICE+wikibase%3Alabel+%7B%0D%0A++++bd%3AserviceParam+wikibase%3Alanguage+%22sv%22+.%0D%0A++%7D%0D%0A%7D&format=json', function (museer) {
 	var museumStats = { "totalCount" : 0, "coordinateCount" : 0, "websiteCount" : 0, "visitorsCount" : 0};
 	var color = ["red", "yellow", "green"];
 
@@ -71,10 +71,10 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 		}
 		
 	}
-	$('#statistik').append('<li>Swedish museums in Wikidata: <strong>' + museumStats["totalCount"] + '</strong></li>');
-	$('#statistik').append('<li>Museums with coordinates: <strong>' + museumStats["coordinateCount"] + '</strong> (' + Number(museumStats["coordinateCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
-	$('#statistik').append('<li>Museums with web site: <strong>' + museumStats["websiteCount"] + '</strong> (' + Number(museumStats["websiteCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
-	$('#statistik').append('<li>Museums with visitor count: <strong>' + museumStats["visitorsCount"] + '</strong> (' + Number(museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
+	$('#statistik').append('<li>Swedish castles in Wikidata: <strong>' + museumStats["totalCount"] + '</strong></li>');
+	$('#statistik').append('<li>Castles with coordinates: <strong>' + museumStats["coordinateCount"] + '</strong> (' + Number(museumStats["coordinateCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
+	$('#statistik').append('<li>Castles with web site: <strong>' + museumStats["websiteCount"] + '</strong> (' + Number(museumStats["websiteCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
+	$('#statistik').append('<li>Castles with visitor count: <strong>' + museumStats["visitorsCount"] + '</strong> (' + Number(museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li>');
 });
 </script>
 </body>
