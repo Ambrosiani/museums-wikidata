@@ -46,8 +46,8 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 
 	for (var i = 0; i < museer.results.bindings.length; i++) {
 		var colorCount = 0;
-		var museumID = museer.results.bindings[i].museum.value.split('Q')[1];
-		var popupContent = "<strong>" + museer.results.bindings[i].museumLabel.value + '</strong><br/>Wikidata: <a href="' + museer.results.bindings[i].museum.value + '" target="_blank">' + museumID + '</a>' ;
+		var museumID = museer.results.bindings[i].castle.value.split('Q')[1];
+		var popupContent = "<strong>" + museer.results.bindings[i].castleLabel.value + '</strong><br/>Wikidata: <a href="' + museer.results.bindings[i].castle.value + '" target="_blank">' + museumID + '</a>' ;
 		museumStats["totalCount"]++;
 		if (museer.results.bindings[i].web) {
 			museumStats["websiteCount"]++;
