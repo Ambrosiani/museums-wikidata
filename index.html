@@ -73,7 +73,7 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 		if (museer.results.bindings[i].web) {
 			museumStats["websiteCount"]++;
 			colorCount++;
-			popupContent += '<br/>Webb: <a href="' + museer.results.bindings[i].web.value + '" target="_blank">' + museer.results.bindings[i].web.value + '</a>';
+			popupContent += '<br/>Web: <a href="' + museer.results.bindings[i].web.value + '" target="_blank">' + museer.results.bindings[i].web.value + '</a>';
 		}
 		if (museer.results.bindings[i].visitors) {
 			museumStats["visitorsCount"]++;
@@ -103,7 +103,7 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 
 	// method that we will use to update the control based on feature properties passed
 	info.update = function (props) {
-	    this._div.innerHTML = '<ul><li>Swedish museums in Wikidata: <strong>' + museumStats["totalCount"] + '</strong></li><li class="mini">Museums with coordinates: <strong>' + museumStats["coordinateCount"] + '</strong> (' + Number(museumStats["coordinateCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li><li class="midi">Museums with web site: <strong>' + museumStats["websiteCount"] + '</strong> (' + Number(museumStats["websiteCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li><li class="maxi">Museums with visitor count: <strong>' + museumStats["visitorsCount"] + '</strong> (' + Number(museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li></ul><p><a href="https://github.com/Ambrosiani/museums-wikidata" target="_blank">Source (Github)</a></p><p>By <a href="https://www.twitter.com/ambrosiani/" target="_blank">Aron Ambrosiani</a> (with help)</p>';
+	    this._div.innerHTML = '<ul><li>Swedish museums in Wikidata: <strong>' + museumStats["totalCount"] + '</strong></li><li class="mini">Museums with coordinates: <strong>' + museumStats["coordinateCount"] + '</strong> (' + Number(museumStats["coordinateCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li><li class="midi">Museums with web site: <strong>' + museumStats["websiteCount"] + '</strong> (' + Number(museumStats["websiteCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li><li class="maxi">Museums with visitor count: <strong>' + museumStats["visitorsCount"] + '</strong> (' + Number(museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0) + ' %)</li></ul><p><a href="https://github.com/Ambrosiani/museums-wikidata" target="_blank">Source (Github)</a></p><p>By <a href="https://www.twitter.com/aronambrosiani/" target="_blank">Aron Ambrosiani</a> (with help)</p>';
 	};
 
 	info.addTo(map);
