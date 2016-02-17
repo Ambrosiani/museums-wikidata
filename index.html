@@ -71,13 +71,17 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 		var popupContent = "<strong>" + museer.results.bindings[i].museumLabel.value + '</strong><br/>Wikidata: <a href="' + museer.results.bindings[i].museum.value + '" target="_blank">' + museumID + '</a>' ;
 		museumStats["totalCount"]++;
 		if (museer.results.bindings[i].web) {
-			museumStats["websiteCount"]++;
-			colorCount++;
+			if( museer.results.bindings[i].web.type == 'uri' ) {
+				museumStats["websiteCount"]++;
+				colorCount++;
+		}
 			popupContent += '<br/>Web: <a href="' + museer.results.bindings[i].web.value + '" target="_blank">' + museer.results.bindings[i].web.value + '</a>';
 		}
 		if (museer.results.bindings[i].visitors) {
-			museumStats["visitorsCount"]++;
-			colorCount++;
+			if( museer.results.bindings[i].visitors.type == 'literal' ) {
+				museumStats["visitorsCount"]++;
+				colorCount++;
+			}
 			popupContent += '<br/>Visits: ' + museer.results.bindings[i].visitors.value;
 		}
 		if (museer.results.bindings[i].coord) {
