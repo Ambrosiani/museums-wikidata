@@ -1,5 +1,7 @@
 # museums-wikidata
-Swedish museums on Wikidata shown on a Leaflet map.
+Museums on Wikidata shown on a Leaflet map.
+
+Right now: museums in Sweden and Italy. Soon generalized.
 
 Wikidata query: http://tinyurl.com/hcz542r
 
