@@ -54,6 +54,7 @@ $('#bloodhound .typeahead').typeahead({
 
 function changeCountry() {
 	map.removeLayer(markers[country]);
+	museumStats = { "totalCount" : 0, "coordinateCount" : 0, "websiteCount" : 0, "visitorsCount" : 0};
   country = $('#bloodhound .typeahead').val();
   markers[country] = L.layerGroup();
   generateMarkers();
