@@ -1,0 +1,73 @@
+body {
+	padding: 0;
+	margin: 0;
+}
+html, body {
+	height: 100%;
+}
+#map {
+	height: 100%;
+}
+
+#info {
+	z-index: 1000;
+	cursor: auto;
+	pointer-events: auto;
+}
+
+.info {
+	background-color: #FFF;
+	opacity: 0.9;
+}
+
+.mini {
+	color: red;
+}
+
+.midi {
+	color: #f90;
+}
+
+.maxi {
+	color: green;
+}
+
+ul, li {padding: 0px 10px;
+	list-style-type: none;
+}
+
+.info p, .info h1, #bloodhound {
+	padding: 0px 20px;
+}	
+
+.info h1 {
+	font-size: 18px;
+	font-weight: normal;
+}
+
+.info input {
+	font-weight: bold;
+	font-size: 14px;
+}
+
+div.tt-menu {
+	z-index: 1100;
+}
+
+#bloodhound .tt-dropdown-menu {
+	max-height: 150px;
+	overflow-y: auto;
+}
+
+.info div.tt-menu {
+	cursor: pointer;
+	background-color: #fff;
+}
+.tt-selectable {
+	padding: 2px 10px;
+	font-size: 14px;
+	border: 1px solid #666;
+}
+.tt-selectable:hover {
+	background-color: #ccc;
+}
