@@ -77,8 +77,21 @@ function generateMarkers() {
 	//this function uses the Wikidata Query Service to retrieve a json with museum data
 	//example query (country=Sweden): http://tinyurl.com/hcz542r
 	//the first json call gets an array of countries to convert country name into country ID, the second json call uses that country ID to query the Wikidata Query API.
+
+	//countries.json is a cleaned-up version of the Wikidata query at http://tinyurl.com/zvwukes with Netherlands (Q55) added manually
+
 $.getJSON('countries.json', function(countries) { 
-$.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+wd%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0D%0APREFIX+wdt%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0D%0APREFIX+wikibase%3A+%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0D%0APREFIX+p%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2F%3E%0D%0APREFIX+v%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fstatement%2F%3E%0D%0APREFIX+q%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fqualifier%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0ASELECT+%3Fmuseum+%3FmuseumLabel+%3FtypLabel+%3Fcoord+%3Fweb+%3Fvisitors%0D%0AWHERE+%7B%0D%0A++%3Fmuseum+wdt%3AP17+wd%3A' + countries[country] + '+.%0D%0A++%3Fmuseum+wdt%3AP31+%3Ftyp+.%0D%0A++%3Ftyp+(wdt%3AP279)*+wd%3AQ33506+.%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP625+%3Fcoord+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP856+%3Fweb+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP1174+%3Fvisitors+.+%0D%0A++%7D%0D%0A++SERVICE+wikibase%3Alabel+%7B%0D%0A++++bd%3AserviceParam+wikibase%3Alanguage+%22sv%2Cit%2Cen%22+.%0D%0A++%7D%0D%0A%7D&format=json', function (museums) { 
+
+	//extract country center coordinate from countries.json
+	var countryCoordText = countries[country][1].split('(');
+	var countryLatlngText = countryCoordText[1].split(' ');
+	var countryLat = countryLatlngText[0];
+	var countryLngText = countryLatlngText[1];			
+	var countryLng = countryLngText.substring(0, countryLngText.length-1);
+	var countryLatlng = L.latLng(countryLat, countryLng); //this variable can be used by Leaflet
+
+
+$.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+wd%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0D%0APREFIX+wdt%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0D%0APREFIX+wikibase%3A+%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0D%0APREFIX+p%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2F%3E%0D%0APREFIX+v%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fstatement%2F%3E%0D%0APREFIX+q%3A+%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fqualifier%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0ASELECT+%3Fmuseum+%3FmuseumLabel+%3FtypLabel+%3Fcoord+%3Fweb+%3Fvisitors%0D%0AWHERE+%7B%0D%0A++%3Fmuseum+wdt%3AP17+wd%3AQ' + countries[country][0].split('Q')[1] + '+.%0D%0A++%3Fmuseum+wdt%3AP31+%3Ftyp+.%0D%0A++%3Ftyp+(wdt%3AP279)*+wd%3AQ33506+.%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP625+%3Fcoord+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP856+%3Fweb+.%0D%0A++%7D%0D%0A++OPTIONAL+%7B%0D%0A+++++%3Fmuseum+wdt%3AP1174+%3Fvisitors+.+%0D%0A++%7D%0D%0A++SERVICE+wikibase%3Alabel+%7B%0D%0A++++bd%3AserviceParam+wikibase%3Alanguage+%22sv%2Cit%2Cen%22+.%0D%0A++%7D%0D%0A%7D&format=json', function (museums) { 
 	
 	for (var i = 0; i < museums.results.bindings.length; i++) { //loops through all museums to create map markers
 		var colorCount = 0; //colorCount is used to determine the color of the map marker
@@ -141,7 +154,10 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 		$('#visitorsCount').html(museumStats["visitorsCount"]);
 		$('#visitorsPercentage').html((museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0));
 
+		map.panTo(countryLatlng);
+
 }); //end of second json call (museums)
+
 }); //end of first json call (countries)
 } //end of generateMarkers function
 </script>
