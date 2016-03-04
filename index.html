@@ -19,7 +19,7 @@
 	<div id="info" class="info leaflet-container leaflet-control leaflet-top leaflet-right"><h1>Museums in <span id="country">Sweden</span></h1><p>Change country (on enter):</p><div id="bloodhound"><input class="typeahead" type="text" placeholder="Sweden"></div><ul><li>Museums in Wikidata: <strong><span id="totalCount"></span></strong></li><li class="mini">Museums with coordinates: <strong><span id="coordinateCount"</span></strong> (<span id="coordinatePercentage"></span> %)</li><li class="midi">Museums with web site: <strong><span id="websiteCount"></span></strong> (<span id="websitePercentage"></span> %)</li><li class="maxi">Museums with visitor count: <strong><span id="visitorsCount"></span></strong> (<span id="visitorsPercentage"></span> %)</li></ul><p><a href="https://github.com/Ambrosiani/museums-wikidata" target="_blank">Source (Github)</a></p><p>By <a href="https://www.twitter.com/aronambrosiani/" target="_blank">Aron Ambrosiani</a> (with help)</p></div>
 	
 	<script>
-		var map = L.map('map').setView([60, 15], 5);
+		var map = L.map('map').setView([61, 15], 5); //create Leaflet map centered on Sweden
 
 		var country = "Sweden"; //this variable is changed by the form. TODO: Fetch this from the url query string
 
