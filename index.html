@@ -154,11 +154,19 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 
 		$('#totalCount').html(museumStats["totalCount"]);
 		$('#coordinateCount').html(museumStats["coordinateCount"]);
-		$('#coordinatePercentage').html((museumStats["coordinateCount"]*100/museumStats["totalCount"]).toFixed(0));
 		$('#websiteCount').html(museumStats["websiteCount"]);
-		$('#websitePercentage').html((museumStats["websiteCount"]*100/museumStats["totalCount"]).toFixed(0));
 		$('#visitorsCount').html(museumStats["visitorsCount"]);
-		$('#visitorsPercentage').html((museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0));
+
+		if(museumStats["totalCount"] > 0) {
+			$('#coordinatePercentage').html((museumStats["coordinateCount"]*100/museumStats["totalCount"]).toFixed(0));
+			$('#websitePercentage').html((museumStats["websiteCount"]*100/museumStats["totalCount"]).toFixed(0));
+			$('#visitorsPercentage').html((museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0));
+		}
+		else{
+			$('#coordinatePercentage').html('0');
+			$('#websitePercentage').html('0');
+			$('#visitorsPercentage').html('0');
+		}
 
 		map.setZoom(5);
 		map.panTo(countryLatlng);
