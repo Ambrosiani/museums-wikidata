@@ -8,20 +8,26 @@
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
 	<link rel="stylesheet" href="style.css" />
 
-	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
 	<script type="text/javascript" src="//code.jquery.com/jquery-1.12.0.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-url/2.1.0/url.min.js"></script>
 
 </head>
 <body>
 
 	<div id="map"></div>
-	<div id="info" class="info leaflet-container leaflet-control leaflet-top leaflet-right"><h1>Museums in <span id="country">Sweden</span></h1><p>Change country (on enter):</p><div id="bloodhound"><input class="typeahead" type="text" placeholder="Sweden"></div><ul><li>Museums in Wikidata: <strong><span id="totalCount"></span></strong></li><li class="mini">Museums with coordinates: <strong><span id="coordinateCount"</span></strong> (<span id="coordinatePercentage"></span> %)</li><li class="midi">Museums with web site: <strong><span id="websiteCount"></span></strong> (<span id="websitePercentage"></span> %)</li><li class="maxi">Museums with visitor count: <strong><span id="visitorsCount"></span></strong> (<span id="visitorsPercentage"></span> %)</li></ul><p><a href="https://github.com/Ambrosiani/museums-wikidata" target="_blank">Source (Github)</a></p><p>By <a href="https://www.twitter.com/aronambrosiani/" target="_blank">Aron Ambrosiani</a> (with help)</p></div>
+	<div id="info" class="info leaflet-container leaflet-control leaflet-top leaflet-right"><h1>Museums in <span id="country">&hellip;</span></h1><p>Change country (on enter):</p><div id="bloodhound"><input class="typeahead" type="text" placeholder="change country here"></div><ul><li>Museums in Wikidata: <strong><span id="totalCount"></span></strong></li><li class="mini">Museums with coordinates: <strong><span id="coordinateCount"</span></strong> (<span id="coordinatePercentage"></span> %)</li><li class="midi">Museums with web site: <strong><span id="websiteCount"></span></strong> (<span id="websitePercentage"></span> %)</li><li class="maxi">Museums with visitor count: <strong><span id="visitorsCount"></span></strong> (<span id="visitorsPercentage"></span> %)</li></ul><p><a href="https://github.com/Ambrosiani/museums-wikidata" target="_blank">Source (Github)</a></p><p>By <a href="https://www.twitter.com/aronambrosiani/" target="_blank">Aron Ambrosiani</a> (with help)</p></div>
 	
 	<script>
-		var map = L.map('map').setView([61, 15], 5); //create Leaflet map centered on Sweden
+		var map = L.map('map'); //create Leaflet map centered on Sweden
 
-		var country = "Sweden"; //this variable is changed by the form. TODO: Fetch this from the url query string
+		var country = "Sweden"; //default value = Sweden. This variable is changed by the querystring and by the form.
+		console.log(country + ' (1st pass)');
+		if($.url('?country')) {
+			country = $.url('?country');
+		}
+		console.log(country + ' (2nd pass)');
 
 		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
 			maxZoom: 18,
@@ -35,6 +41,8 @@ var markers = {};
 markers[country] = L.layerGroup(); //markers[country] is later populated with markers representing museums in a specific country
 var museumStats = { "totalCount" : 0, "coordinateCount" : 0, "websiteCount" : 0, "visitorsCount" : 0}; //these stats are used in the infobox
 var color = ["red", "#fc0", "green"]; //color is used to display the number of properties with data
+
+
 
 generateMarkers(); //generate map markers for the default country
 
@@ -154,7 +162,16 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 		$('#visitorsCount').html(museumStats["visitorsCount"]);
 		$('#visitorsPercentage').html((museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0));
 
+		map.setZoom(5);
 		map.panTo(countryLatlng);
+		var queryStringObject = $.url('?');
+		if(queryStringObject["country"]) {
+			queryStringObject["country"] = country;
+		}
+		var queryString = $.param(queryStringObject);
+		var newUrl = '?' + queryString;
+		console.log(newUrl);
+		history.replaceState({},'',newUrl)
 
 }); //end of second json call (museums)
 
