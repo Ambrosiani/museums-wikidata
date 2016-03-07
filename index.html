@@ -168,6 +168,9 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 		if(queryStringObject["country"]) {
 			queryStringObject["country"] = country;
 		}
+		else{
+			$.extend(queryStringObject, {"country":country});
+		}
 		var queryString = $.param(queryStringObject);
 		var newUrl = '?' + queryString;
 		console.log(newUrl);
