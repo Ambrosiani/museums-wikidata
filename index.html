@@ -17,7 +17,7 @@
 <body>
 
 	<div id="map"></div>
-	<div id="info" class="info leaflet-container leaflet-control leaflet-top leaflet-right"><h1>Museums in <span id="country">&hellip;</span></h1><p>Change country (on enter):</p><div id="bloodhound"><input class="typeahead" type="text" placeholder="change country here"></div><ul><li>Museums in Wikidata: <strong><span id="totalCount"></span></strong></li><li class="mini">Museums with coordinates: <strong><span id="coordinateCount"</span></strong> (<span id="coordinatePercentage"></span> %)</li><li class="midi">Museums with web site: <strong><span id="websiteCount"></span></strong> (<span id="websitePercentage"></span> %)</li><li class="maxi">Museums with visitor count: <strong><span id="visitorsCount"></span></strong> (<span id="visitorsPercentage"></span> %)</li></ul><p><a href="https://github.com/Ambrosiani/museums-wikidata" target="_blank">Source (Github)</a></p><p>By <a href="https://www.twitter.com/aronambrosiani/" target="_blank">Aron Ambrosiani</a> (with help)</p></div>
+	<div id="info" class="info leaflet-container leaflet-control leaflet-top leaflet-right"><h1>Museums in <span id="country">&hellip;</span></h1><p>Change country (on enter):</p><div id="bloodhound"><input class="typeahead" type="text" placeholder="change country here"></div><ul><li>Museums in Wikidata: <strong><span id="totalCount"></span></strong></li><li class="mini">Museums with coordinates: <strong><span id="coordinateCount"</span></strong> (<span id="coordinatePercentage"></span> %)</li><li class="midi">Museums with web site: <strong><span id="websiteCount"></span></strong> (<span id="websitePercentage"></span> %)</li><li class="maxi">Museums with visitor count: <strong><span id="visitorsCount"></span></strong> (<span id="visitorsPercentage"></span> %)</li><li><a href="" target="_blank" id="withoutCoordinatesLink">Museums without coordinates: <strong><span id="withoutCoordinatesCount">0</span></strong> (<span id="withoutCoordinatesPercentage"></span> %)</a></ul><p><a href="https://github.com/Ambrosiani/museums-wikidata" target="_blank">Source (Github)</a></p><p>By <a href="https://www.twitter.com/aronambrosiani/" target="_blank">Aron Ambrosiani</a> (with help)</p></div>
 	
 	<script>
 		var map = L.map('map'); //create Leaflet map centered on Sweden
@@ -157,16 +157,23 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 		$('#websiteCount').html(museumStats["websiteCount"]);
 		$('#visitorsCount').html(museumStats["visitorsCount"]);
 
+		$('#withoutCoordinatesCount').html(museumStats["totalCount"] - museumStats["coordinateCount"]);
+		$('#withoutCoordinatesLink').attr('href', 'https://query.wikidata.org/#PREFIX%20wd%3A%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0APREFIX%20wdt%3A%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0APREFIX%20wikibase%3A%20%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0APREFIX%20p%3A%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2F%3E%0APREFIX%20v%3A%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fstatement%2F%3E%0APREFIX%20q%3A%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fqualifier%2F%3E%0APREFIX%20rdfs%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0APREFIX%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%0A%0ASELECT%20%3Fmuseum%20%3FmuseumLabel%20%3FtypeLabel%20%3Fcoord%0AWHERE%20%7B%0A%20%20%3Fmuseum%20wdt%3AP17%20wd%3AQ' + countries[country][0].split('Q')[1] + '%20.%0A%20%20%3Fmuseum%20wdt%3AP31%20%3Ftype%20.%0A%20%20%3Ftype%20(wdt%3AP279)*%20wd%3AQ33506%20.%0A%20%20MINUS%20%7B%3Fmuseum%20wdt%3AP625%20%3Fcoord%20.%20%7D%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%0A%20%20%20%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22%20.%0A%20%20%7D%0A%7D');
+
 		if(museumStats["totalCount"] > 0) {
 			$('#coordinatePercentage').html((museumStats["coordinateCount"]*100/museumStats["totalCount"]).toFixed(0));
 			$('#websitePercentage').html((museumStats["websiteCount"]*100/museumStats["totalCount"]).toFixed(0));
 			$('#visitorsPercentage').html((museumStats["visitorsCount"]*100/museumStats["totalCount"]).toFixed(0));
+			$('#withoutCoordinatesPercentage').html(((museumStats["totalCount"] - museumStats["coordinateCount"])*100/museumStats["totalCount"]).toFixed(0));
 		}
 		else{
 			$('#coordinatePercentage').html('0');
 			$('#websitePercentage').html('0');
 			$('#visitorsPercentage').html('0');
+			$('#withoutCoordinatesPercentage').html('0');
 		}
+
+
 
 		map.setZoom(5);
 		map.panTo(countryLatlng);
