@@ -5,13 +5,13 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.css" />
 	<link rel="stylesheet" href="style.css" />
 
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
-	<script type="text/javascript" src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.js"></script>
+	<script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-url/2.1.0/url.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-url/2.3.1/url.min.js"></script>
 
 </head>
 <body>
@@ -104,6 +104,7 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 		var museumID = museums.results.bindings[i].museum.value.split('Q')[1]; //retrieve Wikidata Query ID from complete wikidata URL
 		var popupContent = "<strong>" + museums.results.bindings[i].museumLabel.value + '</strong><br/>Wikidata: <a href="' + museums.results.bindings[i].museum.value + '" target="_blank">' + museumID + '</a>' ; //popupContent is shown when the user selects a museum map marker
 		museumStats["totalCount"]++;
+		var logEntry = 'Museum: ' + museums.results.bindings[i].museumLabel.value;
 
 		//checks 3 properties (web site, visitor count, geo coordinates) to see if they contain data
 
@@ -112,6 +113,7 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 				museumStats["websiteCount"]++;
 				colorCount++;
 				popupContent += '<br/>Web: <a href="' + museums.results.bindings[i].web.value + '" target="_blank">' + museums.results.bindings[i].web.value + '</a>'; //append popup content with web site link
+				logEntry += ', Web: ' + museums.results.bindings[i].web.value;
 			}
 			if( museums.results.bindings[i].web.type == 'bnode' ) { //"bnode" is returned if the data is not properly formatted
 				popupContent += '<br/>Web: unknown value';
@@ -122,6 +124,7 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 				museumStats["visitorsCount"]++;
 				colorCount++;
 				popupContent += '<br/>Visits: ' + museums.results.bindings[i].visitors.value; //append popup content with visitor stats
+				logEntry += ', Visits: ' + museums.results.bindings[i].visitors.value;
 			}
 			if( museums.results.bindings[i].visitors.type == 'bnode' ) { //"bnode" is returned if the data is not properly formatted
 				popupContent += '<br/>Visits: unknown value';
@@ -133,16 +136,17 @@ $.getJSON('https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=PREFIX+
 			//the following variables transform the string returned from Wikidata into coordinates useable by Leaflet
 			var coordText = museums.results.bindings[i].coord.value.split('(');
 			var latlngText = coordText[1].split(' ');
-			var lat = latlngText[0];
-			var lngText = latlngText[1];			
-			var lng = lngText.substring(0, lngText.length-1);
+			var lng = latlngText[0];
+			var latText = latlngText[1];			
+			var lat = latText.substring(0, latText.length-1);
 			var latlng = L.latLng(lat, lng); //this variable can be used by Leaflet
+			logEntry += ', Coords: ' + latlng;
 
 			//make marker with geocoordinates & style
 			var marker = L.circleMarker(latlng, {radius: 4, color: 'black', fillOpacity: 1, opacity: 1, fillColor: color[colorCount]}).bindPopup(popupContent);
 			markers[country].addLayer(marker);
 		}
-
+	//console.log(logEntry); //uncomment this if you want the museums listed in the console
 	}  //end of the museum loop
 
 
