@@ -1,0 +1,22 @@
+{
+  "name": "museums-wikidata",
+  "version": "1.0.0",
+  "description": "Museums on Wikidata shown on a [Leaflet](http://leafletjs.com) map. Default: Sweden, but all countries can be selected.",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ambrosiani/museums-wikidata.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ambrosiani/museums-wikidata/issues"
+  },
+  "homepage": "https://github.com/Ambrosiani/museums-wikidata#readme",
+  "devDependencies": {
+    "serve": "^10.1.1"
+  }
+}
